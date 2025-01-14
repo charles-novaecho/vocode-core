@@ -21,8 +21,8 @@ async def main():
 
     outbound_call = OutboundCall(
         base_url=BASE_URL,
-        to_phone="+15555555555",
-        from_phone="+15555555555",
+        to_phone="+12892646158",
+        from_phone="+16476991577",
         config_manager=config_manager,
         agent_config=ChatGPTAgentConfig(
             initial_message=BaseMessage(text="What up"),

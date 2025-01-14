@@ -1,6 +1,7 @@
 # Standard library imports
 import os
 import sys
+import vocode.streaming.models.synthesizer as synthesizer
 
 from dotenv import load_dotenv
 
@@ -28,8 +29,13 @@ configure_pretty_logging()
 app = FastAPI(docs_url=None)
 
 config_manager = RedisConfigManager()
+    
 
 BASE_URL = os.getenv("BASE_URL")
+
+synthesizer_config = synthesizer.AzureSynthesizerConfig.from_telephone_output_device(
+    voice_name="en-US-AvaMultilingualNeural",
+)
 
 if not BASE_URL:
     ngrok_auth = os.environ.get("NGROK_AUTH_TOKEN")
@@ -51,8 +57,8 @@ telephony_server = TelephonyServer(
         TwilioInboundCallConfig(
             url="/inbound_call",
             agent_config=ChatGPTAgentConfig(
-                initial_message=BaseMessage(text="What up"),
-                prompt_preamble="Have a pleasant conversation about life",
+                initial_message=BaseMessage(text="Hello! This is Ava, I'm an AI service representative calling from Nova Echo AI. How can I help you today?"),
+                prompt_preamble="You are a help desk agent representing Nova Echo AI, a company that offers a highly customizable AI call center employee service.",
                 generate_responses=True,
             ),
             # uncomment this to use the speller agent instead
@@ -66,6 +72,7 @@ telephony_server = TelephonyServer(
                 account_sid=os.environ["TWILIO_ACCOUNT_SID"],
                 auth_token=os.environ["TWILIO_AUTH_TOKEN"],
             ),
+            synthesizer_config=synthesizer_config,
         )
     ],
     agent_factory=SpellerAgentFactory(),
